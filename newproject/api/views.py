@@ -22,7 +22,7 @@ def create_data(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'PATCH' ,'DELETE'])
 #Checks if the user is present in the database.
 def user_detail(request, pk):
     try:
@@ -36,6 +36,12 @@ def user_detail(request, pk):
     #Update a particular User
     elif request.method == 'PUT':
         serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PATCH':
+        serializer = UserSerializer(user, data=request.data, partial = True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
